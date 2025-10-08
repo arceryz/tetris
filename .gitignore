@@ -1,3 +1,5 @@
 TetrisTemplate/obj
 TetrisTemplate/bin
 .vs
+.mgstats
+*.mgcontent
