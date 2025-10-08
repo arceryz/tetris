@@ -1,3 +1,0 @@
-Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Users/tjmva/Desktop/Save/Projects/Game Programming 1/Tetris/TetrisTemplate/Content/block.png","C:/Users/tjmva/Desktop/Save/Projects/Game Programming 1/Tetris/TetrisTemplate/Content/bin/DesktopGL/Content/block.xnb","TextureProcessor","Texture2DContent",338,3685,0,0227979
-"C:/Users/tjmva/Desktop/Save/Projects/Game Programming 1/Tetris/TetrisTemplate/Content/SpelFont.spritefont","C:/Users/tjmva/Desktop/Save/Projects/Game Programming 1/Tetris/TetrisTemplate/Content/bin/DesktopGL/Content/SpelFont.xnb","FontDescriptionProcessor","SpriteFontContent",2068,21535,0,217676

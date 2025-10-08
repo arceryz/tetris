@@ -30,7 +30,6 @@ class TetrisGrid
         //grid[2, 3] = Color.Red;
         emptyCell = TetrisGame.ContentManager.Load<Texture2D>("block");
         Position = Vector2.Zero;
-        Clear();
     }
 
     public void ClearGrid()
@@ -42,14 +41,14 @@ class TetrisGrid
                 grid[x, y] = Color.White;
             }
         }
-
     }
+
     /// <summary>
     /// Draws the grid on the screen.
     /// </summary>
     /// <param name="gameTime">An object with information about the time that has passed in the game.</param>
     /// <param name="spriteBatch">The SpriteBatch used for drawing sprites and text.</param>
-    public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch)
     {
         for (int x = 0; x < Width; ++x)
         {
@@ -58,20 +57,8 @@ class TetrisGrid
                 Vector2 pos = new Vector2(x * emptyCell.Width, y * emptyCell.Height)+Position;
                 Color col = grid[x, y];
                 spriteBatch.Draw(emptyCell, pos, col);
-
-          
             }
-        
-        
         }
-        
-    }
-
-    /// <summary>
-    /// Clears the grid.
-    /// </summary>
-    public void Clear()
-    {
     }
 }
 

@@ -49,20 +49,13 @@ class GameWorld
         grid.Position = new Vector2(250, 0);
     }
 
-    public void HandleInput(GameTime gameTime, InputHelper inputHelper)
+    public void Update(float delta)
     {
     }
 
-    public void Update(GameTime gameTime)
+    public void Draw(SpriteBatch spriteBatch)
     {
-    }
-
-    public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-    {
-        spriteBatch.Begin();
-        grid.Draw(gameTime, spriteBatch);
-
-        spriteBatch.End();
+        grid.Draw(spriteBatch);
     }
 
     public void Reset()

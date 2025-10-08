@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework.Content;
 class TetrisGame : Game
 {
     SpriteBatch spriteBatch;
-    InputHelper inputHelper;
-    GameWorld gameWorld;
+    public static InputHelper Input;
+    static GameState huidigeState;
+
+    //GameWorld gameWorld;
 
     /// <summary>
     /// A static reference to the ContentManager object, used for loading assets.
@@ -44,29 +46,35 @@ class TetrisGame : Game
         graphics.PreferredBackBufferHeight = ScreenSize.Y;
 
         // create the input helper object
-        inputHelper = new InputHelper();
+        Input = new InputHelper();
     }
 
     protected override void LoadContent()
     {
         spriteBatch = new SpriteBatch(GraphicsDevice);
-
-        // create and reset the game world
-        gameWorld = new GameWorld();
-        gameWorld.Reset();
+        huidigeState = new MenuState();
     }
 
     protected override void Update(GameTime gameTime)
     {
-        inputHelper.Update(gameTime);
-        gameWorld.HandleInput(gameTime, inputHelper);
-        gameWorld.Update(gameTime);
+        Input.Update();
+
+        float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        huidigeState.Update(delta);
     }
 
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.White);
-        gameWorld.Draw(gameTime, spriteBatch);
+
+        spriteBatch.Begin();
+        huidigeState.Draw(spriteBatch);
+        spriteBatch.End();
+    }
+
+    public static void ChangeState(GameState state)
+    {
+        huidigeState = state;
     }
 }
 

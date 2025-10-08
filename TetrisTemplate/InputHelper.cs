@@ -14,7 +14,7 @@ class InputHelper
     /// Updates the InputHelper object by retrieving the new mouse/keyboard state, and keeping the previous state as a back-up.
     /// </summary>
     /// <param name="gameTime">An object with information about the time that has passed in the game.</param>
-    public void Update(GameTime gameTime)
+    public void Update()
     {
         // update the mouse and keyboard states
         previousMouseState = currentMouseState;
