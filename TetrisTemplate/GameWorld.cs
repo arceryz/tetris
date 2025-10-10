@@ -45,8 +45,7 @@ class GameWorld
 
         font = TetrisGame.ContentManager.Load<SpriteFont>("SpelFont");
 
-        grid = new TetrisGrid();
-        grid.Position = new Vector2(250, 0);
+       
     }
 
     public void Update(float delta)
@@ -55,7 +54,7 @@ class GameWorld
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        grid.Draw(spriteBatch);
+       
     }
 
     public void Reset()

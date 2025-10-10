@@ -4,21 +4,23 @@ using Microsoft.Xna.Framework.Graphics;
 
 class PlayingState: GameState
 {
-	GameWorld gameWorld;
-
-	public PlayingState()
+	TetrisGrid grid;
+	TetrisBlock block;
+    public PlayingState()
 	{
-		gameWorld = new GameWorld();
-		gameWorld.Reset();
-	}
+		block = new TetrisBlock(TetrisBlockData.GetRandom());
+		block.Position = new Vector2(250, 100);
+        grid = new TetrisGrid();
+        grid.Position = new Vector2(250, 0);
+    }
 
 	public override void Update(float delta)
 	{
-		gameWorld.Update(delta);
 	}
 
 	public override void Draw(SpriteBatch batch)
 	{
-		gameWorld.Draw(batch);
-	}
+		grid.Draw(batch);
+		block.Draw(batch);
+    }
 }

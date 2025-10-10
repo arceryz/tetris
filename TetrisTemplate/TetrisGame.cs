@@ -8,7 +8,7 @@ class TetrisGame : Game
     SpriteBatch spriteBatch;
     public static InputHelper Input;
     static GameState huidigeState;
-
+    public static Random Random = new Random();
     //GameWorld gameWorld;
 
     /// <summary>
