@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 using System.Linq;
 
 class TetrisBlockData
@@ -78,6 +79,21 @@ class TetrisBlockData
 
     public int[,] Grid;
     public Color Color;
+
+    public void beweeg(Vector2 position, float Delta)
+    { 
+        TetrisGrid grid;
+        int i = 1;
+        grid= new TetrisGrid();
+        for (int X = 0; X < 5; X++)
+        {
+            for(int Y = 0; Y < 5; Y++)
+            {
+                if (this.Grid[X, Y] == 0) continue;
+                if (position.X > grid.Width) { i = i + 1; Debug.WriteLine(i); }
+            }
+        }
+    }
     TetrisBlockData(Color color, int[,] grid) 
     {
         this.Grid = grid;
@@ -89,12 +105,23 @@ class TetrisBlock
 {
     Texture2D blockTex;
     TetrisBlockData data;
-    public Vector2 Position = Vector2.Zero;
-    
+    public Vector2 Position = new Vector2(400, 30);
+
+
     public TetrisBlock(TetrisBlockData data)
     {
+        Vector2 pos=this.Position;
         this.data = data;
         blockTex = TetrisGame.ContentManager.Load<Texture2D>("block");
+    }
+
+    public void BlockUpdate(float Delta)
+    {
+        if (TetrisGame.Input.KeyPressed(Keys.Right)) Position.X= Position.X +30;
+        if (TetrisGame.Input.KeyPressed(Keys.Left)) Position.X= Position.X -30;
+        Position.Y= Position.Y + (20 * Delta);
+        data.beweeg(Position, Delta);
+        
     }
 
     public void Draw(SpriteBatch spriteBatch)

@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 class PlayingState: GameState
 {
@@ -23,20 +24,21 @@ class PlayingState: GameState
     }
 
 	public override void Update(float delta)
-	{
-		if (TetrisGame.Input.KeyPressed(Keys.X))
+	{    
+        block.BlockUpdate(delta);
+
+        if (TetrisGame.Input.KeyPressed(Keys.X))
 		{
 			block = nextBlocks[0];
 			nextBlocks.RemoveAt(0);
 			nextBlocks.Add(new TetrisBlock(TetrisBlockData.GetRandom()));
 		}
+       
 	}
 
 	public override void Draw(SpriteBatch batch)
 	{
-		block.Position = new Vector2(250, 100);
-
-		grid.Draw(batch);
+        grid.Draw(batch);
 		block.Draw(batch);
 
 		for (int i = 0; i < nextBlocks.Count; i++)

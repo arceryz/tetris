@@ -28,6 +28,7 @@ class TetrisGrid
         ClearGrid();
         emptyCell = TetrisGame.ContentManager.Load<Texture2D>("block");
         Position = Vector2.Zero;
+
     }
     
    
@@ -43,6 +44,7 @@ class TetrisGrid
         
     }
 
+   
     /// <summary>
     /// Draws the grid on the screen.
     /// </summary>
