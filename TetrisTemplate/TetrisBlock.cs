@@ -105,12 +105,12 @@ class TetrisBlock
 {
     Texture2D blockTex;
     TetrisBlockData data;
-    public Vector2 Position = new Vector2(400, 30);
+    public Vector2 Position;
 
 
     public TetrisBlock(TetrisBlockData data)
     {
-        Vector2 pos=this.Position;
+        Vector2 pos= this.Position;
         this.data = data;
         blockTex = TetrisGame.ContentManager.Load<Texture2D>("block");
     }
