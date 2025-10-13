@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
 using System.Linq;
 
@@ -82,15 +83,15 @@ class TetrisBlockData
 
     public void beweeg(Vector2 position, float Delta)
     { 
-        TetrisGrid grid;
+        TetrisGrid grid2;
         int i = 1;
-        grid= new TetrisGrid();
+        grid2= new TetrisGrid();
         for (int X = 0; X < 5; X++)
         {
             for(int Y = 0; Y < 5; Y++)
             {
                 if (this.Grid[X, Y] == 0) continue;
-                if (position.X > grid.Width) { i = i + 1; Debug.WriteLine(i); }
+                if (position.X > grid2.Width) { i = i + 1; Debug.WriteLine(i); position.X = grid2.Width; }
             }
         }
     }
@@ -115,10 +116,29 @@ class TetrisBlock
         blockTex = TetrisGame.ContentManager.Load<Texture2D>("block");
     }
 
+    public int[,] Draaien(int[,] block)
+    {
+        int[,] gedraaid= new int[5,5];
+        for (int X = 0; X < 5; X++)
+        {
+            for (int Y = 0; Y < 5; Y++) 
+            {
+                gedraaid[Y, 5 - 1 - X] = block[X, Y];
+            }
+        } 
+        return gedraaid;
+    }
+    public void Draai()
+    {
+        data.Grid = Draaien(data.Grid);
+    }
+
     public void BlockUpdate(float Delta)
     {
+        
         if (TetrisGame.Input.KeyPressed(Keys.Right)) Position.X= Position.X +30;
         if (TetrisGame.Input.KeyPressed(Keys.Left)) Position.X= Position.X -30;
+        if (TetrisGame.Input.KeyPressed(Keys.Up)) Draai();
         Position.Y= Position.Y + (20 * Delta);
         data.beweeg(Position, Delta);
         

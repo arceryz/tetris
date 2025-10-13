@@ -32,7 +32,8 @@ class PlayingState: GameState
 			block = nextBlocks[0];
 			nextBlocks.RemoveAt(0);
 			nextBlocks.Add(new TetrisBlock(TetrisBlockData.GetRandom()));
-		}
+
+        }
        
 	}
 
