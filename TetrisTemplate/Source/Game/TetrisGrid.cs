@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 /// <summary>
@@ -13,10 +14,15 @@ public class TetrisGrid
     public Vector2 Position;
     public int Width { get { return 10; } }
     public int Height { get { return 20; } }
+
     List<Color[]> grid = new();
+    Texture2D emptyBlockTex;
+    SoundEffect rowClearSFX;
 
 	public TetrisGrid()
     {
+        rowClearSFX = TetrisGame.Load<SoundEffect>(Assets.Sounds.RowClear);
+        emptyBlockTex = TetrisGame.Load<Texture2D>(Assets.Textures.EmptyBlock);
 		Position = Vector2.Zero;
 		for (int y = 0; y < Height; y++)
         {
@@ -51,21 +57,22 @@ public class TetrisGrid
         {
             for (int y = 0; y < Height; ++y) 
             {
-                Vector2 pos = Position + new Vector2(x * TetrisBlock.BlockTex.Width, y * TetrisBlock.BlockTex.Height);
+                Vector2 pos = Position + new Vector2(x * emptyBlockTex.Width, y * emptyBlockTex.Height);
                 Color col = grid[y][x];
-                batch.Draw(TetrisBlock.BlockTex, pos, col);
+                batch.Draw(col == EmptyColor ? emptyBlockTex: TetrisBlock.BlockTex, pos, col);
             }
         }
     }
 
     /// <summary>
     /// Returns whether the given tetris block is colliding with the grid
-    /// at the given integer grid position.
+    /// at the given integer grid position. Returns an additional direction of
+    /// collision information (1=right, -1=left) that can be used to offset the block.
     /// </summary>
     /// <param name="block"></param>
     /// <param name="gridPos"></param>
     /// <returns></returns>
-    public bool IsBlockColliding(TetrisBlock block, Vector2I gridPos)
+    public (bool, int) IsBlockCollidingSide(TetrisBlock block, Vector2I gridPos)
     {
         for (int y = 0; y < block.Grid.GetLength(0); y++)
         {
@@ -75,19 +82,31 @@ public class TetrisGrid
                 {
                     Vector2I pos = gridPos + new Vector2I(x, y) - block.Origin;
                     if (GetColorAt(pos) != EmptyColor)
-                        return true;
+                        return (true, x > block.Origin.X ? 1: -1);
                 }
             }
         }
-        return false;
+        return (false, 0);
     }
 
     /// <summary>
-    /// Returns the color at the given position, solid (black) if out of bounds.
+    /// Returns whether block is colliding.
     /// </summary>
-    /// <param name="pos"></param>
+    /// <param name="block"></param>
+    /// <param name="gridPos"></param>
     /// <returns></returns>
-    public Color GetColorAt(Vector2I pos)
+    public bool IsBlockColliding(TetrisBlock block, Vector2I gridPos)
+    {
+       (bool coll, int side) = IsBlockCollidingSide(block, gridPos);
+        return coll;
+    }
+
+	/// <summary>
+	/// Returns the color at the given position, solid (black) if out of bounds.
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <returns></returns>
+	public Color GetColorAt(Vector2I pos)
     {
         if (pos.X >= 0 && pos.Y >= 0 && pos.X < Width && pos.Y < Height)
             return grid[pos.Y][pos.X];
@@ -132,6 +151,7 @@ public class TetrisGrid
     /// </summary>
     public void PopFullRows()
     {
+        int popCount = 0;
         for (int y = 0; y < Height; y++)
         {
             bool isFull = true;
@@ -150,7 +170,15 @@ public class TetrisGrid
                 Color[] newRow = new Color[Width];
                 for (int i = 0; i < Width; i++) newRow[i] = EmptyColor;
                 grid.Insert(0, newRow);
+                popCount += 1;
             }
+        }
+
+        if (popCount > 0)
+        {
+            PlayingState.AddScore(100 * popCount * popCount);
+            TetrisGame.AddCameraShake(popCount * 100);
+            rowClearSFX.Play(0.5f, 0, 0);
         }
     }
 

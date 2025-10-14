@@ -4,10 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 public class TetrisBlock
 {
     public static Texture2D BlockTex;
-    public static void LoadContent()
+	public static Texture2D BlockOutlineTex;
+	public static void LoadContent()
     {
-        BlockTex = TetrisGame.Load<Texture2D>(Assets.Textures.TetrisBlock);
-    }
+        BlockTex = TetrisGame.Load<Texture2D>(Assets.Textures.Block);
+		BlockOutlineTex = TetrisGame.Load<Texture2D>(Assets.Textures.BlockOutline);
+	}
 
     public static TetrisBlock[] Blocks =
     {
@@ -23,13 +25,13 @@ public class TetrisBlock
             { 1, 1, 1 },
         }),
 
-        new TetrisBlock(Color.Purple, new Vector2I(1, 1), true, new int[,]
+        new TetrisBlock(Color.Magenta, new Vector2I(1, 1), true, new int[,]
         {
             { 0, 1, 0 },
             { 1, 1, 1 },
         }),
 
-        new TetrisBlock(Color.Green, new Vector2I(1, 1), true, new int[,]
+        new TetrisBlock(Color.Lime, new Vector2I(1, 1), true, new int[,]
         {
             { 0, 1, 1 },
             { 1, 1, 0 },
@@ -76,16 +78,8 @@ public class TetrisBlock
         return new TetrisBlock(Color, Origin, canRotate, Grid);
     }
 
-    public void Draw(SpriteBatch batch, Vector2 position, bool darkened=false)
+    public void Draw(SpriteBatch batch, Vector2 position, bool outline=false)
     {
-        Color col = Color;
-        if (darkened)
-        {
-            col.R /= 2;
-            col.G /= 2;
-            col.B /= 2;
-        }
-
         for (int y = 0; y < Grid.GetLength(0); y++)
         {
             for (int x = 0; x < Grid.GetLength(1); x++)
@@ -93,7 +87,7 @@ public class TetrisBlock
                 if (Grid[y, x] == 1)
                 {
                     Vector2 pos = position + new Vector2((x-Origin.X) * BlockTex.Width, (y-Origin.Y) * BlockTex.Height);
-                    batch.Draw(BlockTex, pos, col);
+                    batch.Draw(outline ? BlockOutlineTex: BlockTex, pos, Color);
                 }
             }
         }

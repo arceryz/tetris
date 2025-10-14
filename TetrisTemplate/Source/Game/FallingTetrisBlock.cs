@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Linq;
 using System;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Audio;
 
 /// <summary>
 /// Contrary to the normal TetrisBlock class, this class manages the
@@ -17,6 +18,11 @@ public class FallingTetrisBlock
 	TetrisBlock block;
 	float fallTimer = 0.0f;
 	bool isDisabled = false;
+	bool skipDraw = false;
+
+	SoundEffect blockHitSFX;
+	SoundEffect blockRotateSFX;
+	SoundEffect blockMoveSFX;
 
 	/// <summary>
 	/// Creates a new falling block for the assigned grid.
@@ -25,6 +31,10 @@ public class FallingTetrisBlock
 	/// <param name="assignedGrid"></param>
 	public FallingTetrisBlock(int playerIndex, TetrisBlock block)
 	{
+		blockHitSFX = TetrisGame.Load<SoundEffect>(Assets.Sounds.BlockHit);
+		blockRotateSFX = TetrisGame.Load<SoundEffect>(Assets.Sounds.BlockRotate);
+		blockMoveSFX = TetrisGame.Load<SoundEffect>(Assets.Sounds.BlockMove);
+
 		this.playerIndex = playerIndex;
 		this.block = block;
 		gridPos = new Vector2I(5, 2);
@@ -60,11 +70,16 @@ public class FallingTetrisBlock
 			TryMoveY(1);
 		}
 		fallTimer += delta;
+
+		if (PlayingState.TetrisGrid.IsBlockColliding(block, gridPos + new Vector2I(0, 1)))
+			skipDraw = fallTimer % 0.1f < 0.05f;
+		else
+			skipDraw = false;
 	}
 
 	public void Draw(SpriteBatch batch)
 	{
-		if (isDisabled) 
+		if (isDisabled || skipDraw) 
 			return;
 
 		// Visualise the current landing position by
@@ -83,15 +98,34 @@ public class FallingTetrisBlock
 	}
 
 	/// <summary>
-	/// Try rotating the block if no collision.
+	/// Try rotating the block if no collision. If there is a collision, try
+	/// to move the block in the opposite direction to still succeed in rotating.
 	/// </summary>
 	/// <param name="left"></param>
 	public void TryRotate(bool left=true)
 	{
+		blockRotateSFX.Play(0.5f, 0, 0);
 		TetrisBlock newBlock = block.Duplicate();
 		newBlock.Rotate(left);
-		if (!PlayingState.TetrisGrid.IsBlockColliding(newBlock, gridPos))
+		
+
+		(bool coll, int side) = PlayingState.TetrisGrid.IsBlockCollidingSide(newBlock, gridPos);
+		if (!coll)
 			block = newBlock;
+		else
+		{
+			// Take steps in the opposite direction.
+			for (int i = 0; i < 5; i++)
+			{
+				Vector2I newPos = gridPos + new Vector2I(-side * i, 0);
+				if (!PlayingState.TetrisGrid.IsBlockColliding(newBlock, newPos))
+				{
+					gridPos = newPos;
+					block = newBlock;
+					break;
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -100,7 +134,6 @@ public class FallingTetrisBlock
 	/// <param name="dx"></param>
 	public void TryMoveX(int dx)
 	{
-		Debug.WriteLine($"Trying to move dx={dx}");
 		// First try moving horizontally.
 		Vector2I pos = gridPos + new Vector2I(dx, 0);
 		if (!PlayingState.TetrisGrid.IsBlockColliding(block, pos))
@@ -113,13 +146,14 @@ public class FallingTetrisBlock
 	/// <param name="dy"></param>
 	public void TryMoveY(int dy)
 	{
-		Debug.WriteLine($"Trying to move dy={dy}");
 		Vector2I pos = gridPos + new Vector2I(0, dy);
 		if (PlayingState.TetrisGrid.IsBlockColliding(block, pos))
 		{
 			PlayingState.TetrisGrid.MergeBlock(block, gridPos);
 			isDisabled = true;
 			PlayingState.CreateFallingBlock(playerIndex);
+			TetrisGame.AddCameraShake(10);
+			blockHitSFX.Play(0.25f, 0, 0);
 		}
 		else
 		{
