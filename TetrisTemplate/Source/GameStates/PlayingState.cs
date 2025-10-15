@@ -8,15 +8,19 @@ public class PlayingState: GameState
 {
 	// Game settings.
 	public static float NumPreviewBlocks = 3;
-	public static float BlockFallInterval = 0.75f;
 	public static float BlockFallIntervalFast = 0.05f;
+
+	public static int[] LevelScores = { 200, 700, 1500 };
+	public static float[] BlockFallIntervals = { 0.75f, 0.5f, 0.4f, 0.35f };
 	public static bool MultiplayerMode = false;
 
 	public static TetrisGrid TetrisGrid;
 	public static FallingTetrisBlock Player1;
 	public static FallingTetrisBlock Player2;
 	public static int Score { get; private set; } = 0;
+	public static int SpeedLevel = 0;
 
+	static int nextLevelScore;
 	static float scoreFlashTimer = 0;
 	static string scoreFlashText = "";
 	static List<TetrisBlock> previewBlocks;
@@ -28,6 +32,8 @@ public class PlayingState: GameState
 		TetrisGrid = new TetrisGrid();
 		TetrisGrid.Position = TetrisGame.GetAnchor(0, -1, -5 * 30, 0);
 		Score = 0;
+		SpeedLevel = 0;
+		nextLevelScore = LevelScores[0];
 		arcadeFont = TetrisGame.Load<ImageFont>(Assets.Fonts.Arcade);
 
 		previewBlocks = new();
@@ -65,6 +71,9 @@ public class PlayingState: GameState
 		}
 
 		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(-1, -1, 20, 20), $"{Score:D6}", Color.White, 4, false);
+		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(1, -1, -190, 20), $"level {SpeedLevel+1}", Color.White, 3, false);
+		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(1, -1, -200, 60), $"next at {nextLevelScore}", Color.Gray, 2, false);
+
 		if (scoreFlashTimer > 0 && scoreFlashTimer % 0.2f < 0.1f)
 		{
 			arcadeFont.DrawString(batch, TetrisGame.GetAnchor(0, 0, -3, -3), scoreFlashText, Color.Orange, 6, true);
@@ -72,6 +81,8 @@ public class PlayingState: GameState
 		}
 
 		Color controlColor = new Color(50, 50, 50);
+		if (MultiplayerMode)
+			arcadeFont.DrawString(batch, TetrisGame.GetAnchor(-1, 1, 10, -130), "player 2: wasd", controlColor, 2, false);
 		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(-1, 1, 20, -100), "arrows: move", controlColor, 2, false);
 		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(-1, 1, 20, -80), "down: faster", controlColor, 2, false);
 		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(-1, 1, 20, -50), "z : rotate l", controlColor, 2, false);
@@ -106,6 +117,13 @@ public class PlayingState: GameState
 		scoreFlashText = $"{word} {score}";
 		scoreFlashTimer = 1;
 		Score += score;
+
+		if (Score >= nextLevelScore && SpeedLevel < BlockFallIntervals.Length - 1)
+		{
+			SpeedLevel += 1;
+			scoreFlashText = $"level {SpeedLevel+1}";
+			nextLevelScore = LevelScores[SpeedLevel];
+		}
 	}
 
 	static TetrisBlock GetNextBlock()

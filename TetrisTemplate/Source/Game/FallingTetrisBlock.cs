@@ -107,7 +107,7 @@ public class FallingTetrisBlock
 
 		// Apply falling behavior.
 		float fallInterval = TetrisGame.Input.KeyDown(mapping[Controls.MoveDown]) ?
-			PlayingState.BlockFallIntervalFast : PlayingState.BlockFallInterval;
+			PlayingState.BlockFallIntervalFast : PlayingState.BlockFallIntervals[PlayingState.SpeedLevel];
 		if (fallTimer > fallInterval)
 		{
 			fallTimer = 0;
