@@ -57,6 +57,9 @@ public class PlayingState: GameState
 
 	public override void Draw(SpriteBatch batch)
 	{
+		if (TetrisGame.Input.KeyDown(Keys.LeftShift) && TetrisGame.Input.KeyPressed(Keys.X))
+			AddScore(1000);
+
         TetrisGrid.Draw(batch);
 		Player1.Draw(batch);
 		if (MultiplayerMode)
