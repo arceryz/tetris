@@ -10,7 +10,7 @@ public class PlayingState: GameState
 	public static float NumPreviewBlocks = 3;
 	public static float BlockFallIntervalFast = 0.05f;
 
-	public static int[] LevelScores = { 200, 700, 1500 };
+	public static int[] LevelScores = { 200, 700, 1500, -1 };
 	public static float[] BlockFallIntervals = { 0.75f, 0.5f, 0.4f, 0.35f };
 	public static bool MultiplayerMode = false;
 
@@ -57,6 +57,9 @@ public class PlayingState: GameState
 
 	public override void Draw(SpriteBatch batch)
 	{
+		if (TetrisGame.Input.KeyPressed(Keys.X))
+			AddScore(1000);
+
         TetrisGrid.Draw(batch);
 		Player1.Draw(batch);
 		if (MultiplayerMode)
@@ -72,7 +75,8 @@ public class PlayingState: GameState
 
 		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(-1, -1, 20, 20), $"{Score:D6}", Color.White, 4, false);
 		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(1, -1, -190, 20), $"level {SpeedLevel+1}", Color.White, 3, false);
-		arcadeFont.DrawString(batch, TetrisGame.GetAnchor(1, -1, -200, 60), $"next at {nextLevelScore}", Color.Gray, 2, false);
+		if (nextLevelScore > 0)
+			arcadeFont.DrawString(batch, TetrisGame.GetAnchor(1, -1, -200, 60), $"next at {nextLevelScore}", Color.Gray, 2, false);
 
 		if (scoreFlashTimer > 0 && scoreFlashTimer % 0.2f < 0.1f)
 		{
