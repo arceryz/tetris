@@ -9,3 +9,15 @@ toegevoegd zoals screenshake, geluidseffecten en muziek.
 ---
 <br><br>
 
+# Features
+
+- Tetris with 1 player mode classic style
+- 2 player mode for extra strategy
+- CRT effect shader for classic retro era
+- Screen shake effect
+- Sound effects
+- Settings menu
+- Fancy title menu
+- Rainbow colors!
+
+In 2-player mode there is a secret technique where you can merge two tetris blocks if you time it correctly.
