@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Audio;
+using System.Collections.Generic;
 
 /// <summary>
 /// Contrary to the normal TetrisBlock class, this class manages the
@@ -13,12 +14,46 @@ using Microsoft.Xna.Framework.Audio;
 /// </summary>
 public class FallingTetrisBlock
 {
+	enum Controls
+	{
+		RotateLeft,
+		RotateRight,
+		MoveLeft,
+		MoveRight,
+		MoveDown
+	}
+
+	static Dictionary<Controls, Keys> singlePlayerMapping = new(){
+		{ Controls.RotateLeft, Keys.Z },
+		{ Controls.RotateRight, Keys.Up },
+		{ Controls.MoveLeft, Keys.Left },
+		{ Controls.MoveRight, Keys.Right },
+		{ Controls.MoveDown, Keys.Down },
+	};
+
+	static Dictionary<Controls, Keys> player1Mapping = new(){
+		{ Controls.RotateLeft, Keys.P },
+		{ Controls.RotateRight, Keys.Up },
+		{ Controls.MoveLeft, Keys.Left },
+		{ Controls.MoveRight, Keys.Right },
+		{ Controls.MoveDown, Keys.Down },
+	};
+
+	static Dictionary<Controls, Keys> player2Mapping = new(){
+		{ Controls.RotateLeft, Keys.W },
+		{ Controls.RotateRight, Keys.E },
+		{ Controls.MoveLeft, Keys.A },
+		{ Controls.MoveRight, Keys.D },
+		{ Controls.MoveDown, Keys.S },
+	};
+
 	public Vector2I gridPos;
 	int playerIndex;
 	TetrisBlock block;
 	float fallTimer = 0.0f;
 	bool isDisabled = false;
 	bool skipDraw = false;
+	Dictionary<Controls, Keys> mapping;
 
 	SoundEffect blockHitSFX;
 	SoundEffect blockRotateSFX;
@@ -37,13 +72,22 @@ public class FallingTetrisBlock
 
 		this.playerIndex = playerIndex;
 		this.block = block;
-		gridPos = new Vector2I(5, 2);
+
+		if (PlayingState.MultiplayerMode)
+			gridPos = playerIndex == 1 ? new Vector2I(2, 2) : new Vector2I(7, 2);
+		else
+			gridPos = new Vector2I(5, 2);
 
 		if (PlayingState.TetrisGrid.IsBlockColliding(block, gridPos))
 		{
 			isDisabled = true;
 			PlayingState.GameOver();
 		}
+
+		if (PlayingState.MultiplayerMode)
+			mapping = playerIndex == 0 ? player1Mapping : player2Mapping;
+		else
+			mapping = singlePlayerMapping;
 	}
 
 	public void Update(float delta)
@@ -51,18 +95,18 @@ public class FallingTetrisBlock
 		if (isDisabled) 
 			return;
 
-		if (TetrisGame.Input.KeyPressed(Keys.Z))
+		if (TetrisGame.Input.KeyPressed(mapping[Controls.RotateLeft]))
 			TryRotate();
-		if (TetrisGame.Input.KeyPressed(Keys.Up))
+		if (TetrisGame.Input.KeyPressed(mapping[Controls.RotateRight]))
 			TryRotate(false);
 
-		if (TetrisGame.Input.KeyPressed(Keys.Left))
+		if (TetrisGame.Input.KeyPressed(mapping[Controls.MoveLeft]))
 			TryMoveX(-1);
-		if (TetrisGame.Input.KeyPressed(Keys.Right))
+		if (TetrisGame.Input.KeyPressed(mapping[Controls.MoveRight]))
 			TryMoveX(1);
 
 		// Apply falling behavior.
-		float fallInterval = TetrisGame.Input.KeyDown(Keys.Down) ?
+		float fallInterval = TetrisGame.Input.KeyDown(mapping[Controls.MoveDown]) ?
 			PlayingState.BlockFallIntervalFast : PlayingState.BlockFallInterval;
 		if (fallTimer > fallInterval)
 		{
@@ -93,8 +137,8 @@ public class FallingTetrisBlock
 			landingPos = testPos;
 		}
 
-		block.Draw(batch, PlayingState.TetrisGrid.GridToScreenPos(landingPos), true);
-		block.Draw(batch, PlayingState.TetrisGrid.GridToScreenPos(gridPos));
+		block.Draw(batch, PlayingState.TetrisGrid.GridToScreenPos(landingPos), true, playerIndex == 1);
+		block.Draw(batch, PlayingState.TetrisGrid.GridToScreenPos(gridPos), false, playerIndex == 1);
 	}
 
 	/// <summary>

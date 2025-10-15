@@ -10,9 +10,11 @@ public class PlayingState: GameState
 	public static float NumPreviewBlocks = 3;
 	public static float BlockFallInterval = 0.75f;
 	public static float BlockFallIntervalFast = 0.05f;
+	public static bool MultiplayerMode = false;
 
 	public static TetrisGrid TetrisGrid;
 	public static FallingTetrisBlock Player1;
+	public static FallingTetrisBlock Player2;
 	public static int Score { get; private set; } = 0;
 
 	static float scoreFlashTimer = 0;
@@ -33,12 +35,17 @@ public class PlayingState: GameState
 		{
 			previewBlocks.Add(TetrisBlock.GetRandom());
 		}
+
 		CreateFallingBlock(0);
+		if (MultiplayerMode)
+			CreateFallingBlock(1);
     }
 
 	public override void Update(float delta)
 	{
 		Player1.Update(delta);
+		if (MultiplayerMode)
+			Player2.Update(delta);
 		if (scoreFlashTimer > 0) scoreFlashTimer -= delta;
 	}
 
@@ -46,6 +53,8 @@ public class PlayingState: GameState
 	{
         TetrisGrid.Draw(batch);
 		Player1.Draw(batch);
+		if (MultiplayerMode)
+			Player2.Draw(batch);
 
 		// Draw upcoming blocks.
 		for (int i = 0; i < NumPreviewBlocks; i++)
@@ -77,9 +86,9 @@ public class PlayingState: GameState
 	public static void CreateFallingBlock(int playerIndex)
 	{
 		if (playerIndex == 0)
-		{
 			Player1 = new FallingTetrisBlock(0, GetNextBlock());
-		}
+		if (playerIndex == 1)
+			Player2 = new FallingTetrisBlock(1, GetNextBlock());
 	}
 
 	public static void AddScore(int score)

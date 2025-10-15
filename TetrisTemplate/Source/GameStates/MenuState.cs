@@ -19,7 +19,7 @@ public class MenuState: GameState
 	{
 		if (TetrisGame.Input.KeyPressed(Keys.Enter))
 		{
-			TetrisGame.ChangeState(new PlayingState());
+			TetrisGame.ChangeState(new SettingsState());
 		}
 	}
 

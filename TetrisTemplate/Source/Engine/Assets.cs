@@ -3,6 +3,7 @@
 	public static class Textures
 	{
 		public static string Block = "Block";
+		public static string Block2 = "Block2";
 		public static string BlockOutline = "Block_Outline";
 		public static string EmptyBlock = "Empty_Block";
 	}

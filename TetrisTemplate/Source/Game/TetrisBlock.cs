@@ -5,10 +5,13 @@ public class TetrisBlock
 {
     public static Texture2D BlockTex;
 	public static Texture2D BlockOutlineTex;
+    public static Texture2D Block2Tex;
+
 	public static void LoadContent()
     {
         BlockTex = TetrisGame.Load<Texture2D>(Assets.Textures.Block);
 		BlockOutlineTex = TetrisGame.Load<Texture2D>(Assets.Textures.BlockOutline);
+        Block2Tex = TetrisGame.Load<Texture2D>(Assets.Textures.Block2);
 	}
 
     public static TetrisBlock[] Blocks =
@@ -78,8 +81,14 @@ public class TetrisBlock
         return new TetrisBlock(Color, Origin, canRotate, Grid);
     }
 
-    public void Draw(SpriteBatch batch, Vector2 position, bool outline=false)
+    public void Draw(SpriteBatch batch, Vector2 position, bool outline=false, bool alternate=false)
     {
+        Texture2D tex = BlockTex;
+        if (alternate)
+            tex = Block2Tex;
+        if (outline)
+            tex = BlockOutlineTex;
+
         for (int y = 0; y < Grid.GetLength(0); y++)
         {
             for (int x = 0; x < Grid.GetLength(1); x++)
@@ -87,7 +96,7 @@ public class TetrisBlock
                 if (Grid[y, x] == 1)
                 {
                     Vector2 pos = position + new Vector2((x-Origin.X) * BlockTex.Width, (y-Origin.Y) * BlockTex.Height);
-                    batch.Draw(outline ? BlockOutlineTex: BlockTex, pos, Color);
+                    batch.Draw(tex, pos, Color);
                 }
             }
         }
